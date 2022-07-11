@@ -13,7 +13,7 @@ export class CdkCustomEventBusStack extends Stack {
 
         //Creating a custom event bus
         const customEventBus = new EventBus(this, "CustomEventBus", {
-            eventBusName: "custom-event-bus"
+            eventBusName: "customer-subscription-bus"
         });
 
         //Custom event publisher lambda

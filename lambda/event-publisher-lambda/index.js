@@ -1,21 +1,18 @@
 const AWS = require('aws-sdk')
 AWS.config.region = process.env.AWS_REGION || 'us-east-1'
-const eventbridge = new AWS.EventBridge()
+const eventBridge = new AWS.EventBridge()
 
 exports.handler = async (event, context) => {
     const EVENT_BUS_ARN = process.env.EVENT_BUS_ARN
     const params = {
         Entries: [
             {
-                // Event envelope fields
-                Source: 'eventSource',
-                EventBusName: EVENT_BUS_ARN,
-                DetailType: 'subscribe',
+                Source: 'com.duleendra.customerapp',
+                DetailType: 'customer-subscription',
                 Time: new Date(),
-
-                // Main event body
+                EventBusName: EVENT_BUS_ARN,
                 Detail: JSON.stringify({
-                    action: 'newCustomer',
+                    action: 'subscribe',
                     type: 'Gold'
                 })
             }
@@ -23,7 +20,7 @@ exports.handler = async (event, context) => {
     }
     console.log('--- Params ---')
     console.log(params)
-    const result = await eventbridge.putEvents(params).promise()
+    const result = await eventBridge.putEvents(params).promise()
 
     console.log('--- Response ---')
     console.log(result)
