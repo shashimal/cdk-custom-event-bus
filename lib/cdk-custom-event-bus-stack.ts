@@ -1,9 +1,9 @@
 import {Stack, StackProps} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
-import {EventBus, Rule} from "aws-cdk-lib/aws-events";
+import {CfnEventBusPolicy, EventBus, Rule} from "aws-cdk-lib/aws-events";
 import {Code, Function, Runtime} from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
-import {Policy, PolicyStatement} from "aws-cdk-lib/aws-iam";
+import {AccountRootPrincipal, Policy, PolicyStatement} from "aws-cdk-lib/aws-iam";
 import {LambdaFunction} from "aws-cdk-lib/aws-events-targets";
 
 
@@ -14,6 +14,30 @@ export class CdkCustomEventBusStack extends Stack {
         //Creating a custom event bus
         const customEventBus = new EventBus(this, "CustomEventBus", {
             eventBusName: "customer-subscription-bus"
+        });
+
+
+        //Adding a resource based policy to custom event bus
+        const cfnEventBusResourcePolicy = new CfnEventBusPolicy(this,"EventBusResourcePolicy", {
+            statementId: "CustomerSubscriptionSid",
+            eventBusName: customEventBus.eventBusName,
+            statement:
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "events:PutEvents"
+                    ],
+                    "Principal": {
+                        "AWS": this.account
+                    },
+                    "Resource": customEventBus.eventBusArn,
+                    "Condition": {
+                        "StringEquals": {
+                            "events:detail-type": "customer-subscription",
+                            "events:source": "com.duleendra.customerapp"
+                        }
+                    }
+                }
         });
 
         //Custom event publisher lambda
