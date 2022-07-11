@@ -48,14 +48,14 @@ export class CdkCustomEventBusStack extends Stack {
             runtime: Runtime.NODEJS_14_X,
         })
 
-        //Event rule to trigger the event consumer lambda function (eventConsumerLambda)
+        //Lambda function to process events from EventBridge rule.
         const eventRule = new Rule(this, "EventRule", {
             eventBus: customEventBus,
             eventPattern: {
-                source: ["custom.eventSource"],
+                source: ["com.duleendra.customerapp"],
                 detail:{
-                    action: ["newCustomer"],
-                    type: ["Gold"],
+                    action: ["subscribe"],
+                    type: ["Gold", "Silver", "Platinum"],
                 }
             }
         });
